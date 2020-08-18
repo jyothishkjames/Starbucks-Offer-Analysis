@@ -10,6 +10,8 @@ def read_data():
     profile = pd.read_json('../data/dataset/profile.json', orient='records', lines=True)
     transcript = pd.read_json('../data/dataset/transcript.json', orient='records', lines=True)
 
+    return portfolio, profile, transcript
+
 
 def clean_data(profile, portfolio, transcript, offer, amount):
     # Converting None to NAN
