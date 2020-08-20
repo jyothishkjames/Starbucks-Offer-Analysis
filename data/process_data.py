@@ -94,6 +94,17 @@ def match(offer_type_df, amount_df):
 
 
 def generate_features(portfolio, transcript, amount_df):
+    """
+    INPUT:
+    portfolio - (pandas dataframe) portfolio as defined at the top of the notebook
+    transcript - (pandas dataframe) transcript as defined at the top of the notebook
+    amount_df - (pandas dataframe) amount_df returned by function clean_data
+
+    OUTPUT:
+    df_offer_type_amount - (pandas dataframe) dataframe which contains the features for training the model
+
+    """
+
     # Find duplicated rows based on duplicted time
     duplicated_df = transcript[transcript.duplicated(subset=['time'])]
 
