@@ -93,3 +93,37 @@ def match(offer_type_df, amount_df):
     return df_match
 
 
+def generate_features(portfolio, transcript, amount_df):
+    # Find duplicated rows based on duplicted time
+    duplicated_df = transcript[transcript.duplicated(subset=['time'])]
+
+    # Get rows with event as 'offer completed'
+    df_offer_completed = duplicated_df[duplicated_df['event'] == 'offer completed']
+
+    # Drop column amount
+    df_offer_completed.drop(columns=['amount', 'event'], inplace=True)
+
+    # Merge dataframes amount_df and df_offer_completed, map columns 'amount' to 'offer id'
+    df_offer_amount = amount_df.merge(df_offer_completed, how='right', on=['person', 'time'])
+
+    # Rename column 'id' to 'offer id'
+    portfolio = portfolio.rename(columns={'id': 'offer id'})
+
+    # Merge dataframes portfolio and df_offer_amount, map columns 'offer id' to 'offer type'
+    df_offer_type_amount = portfolio.merge(df_offer_amount, how='right', on='offer id')
+
+    # Drop unnecessary columns
+    df_offer_type_amount.drop(columns=['offer id', 'channels', 'person', 'event', 'time', 'value'], inplace=True)
+
+    # Generate year and month from column became_member_on
+    df_became_member_on = pd.to_datetime(df_offer_type_amount['became_member_on'], format='%Y%m%d',
+                                         errors='ignore').to_frame()
+    df_offer_type_amount['year'] = pd.DatetimeIndex(df_became_member_on['became_member_on']).year
+    df_offer_type_amount['month'] = pd.DatetimeIndex(df_became_member_on['became_member_on']).month
+
+    # Drop column became_member_on
+    df_offer_type_amount.drop(columns=['became_member_on'], inplace=True)
+
+    return df_offer_type_amount
+
+
