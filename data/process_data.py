@@ -6,6 +6,8 @@ import json
 
 def read_data():
     """
+    Function to read the data
+
     OUTPUT:
     portfolio - portfolio dataframe
     profile - profile dataframe
@@ -22,6 +24,8 @@ def read_data():
 
 def clean_data(profile, portfolio, transcript, offer, amount):
     """
+    Function to clean the data
+
     INPUT:
     profile - (pandas dataframe) profile as defined at the top of the notebook
     portfolio - (pandas dataframe) portfolio as defined at the top of the notebook
@@ -73,6 +77,8 @@ def clean_data(profile, portfolio, transcript, offer, amount):
 
 def match(offer_type_df, amount_df):
     """
+    Function to get the demographic groups that will make purchases even if they don't receive an offer
+
     INPUT:
     offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
     amount_df - (pandas dataframe) amount_df returned by function clean_data
@@ -95,6 +101,8 @@ def match(offer_type_df, amount_df):
 
 def generate_features(portfolio, transcript, amount_df):
     """
+    Function to generate features for training the model
+
     INPUT:
     portfolio - (pandas dataframe) portfolio as defined at the top of the notebook
     transcript - (pandas dataframe) transcript as defined at the top of the notebook
