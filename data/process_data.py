@@ -77,26 +77,24 @@ def clean_data(profile, portfolio, transcript, offer, amount):
 
 def match(offer_type_df, amount_df):
     """
-    Function to get the demographic groups that will make purchases even if they don't receive an offer
-
     INPUT:
     offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
     amount_df - (pandas dataframe) amount_df returned by function clean_data
 
     OUTPUT:
-    df_match - (pandas dataframe) dataframe which contains demographic groups that will
+    match_df - (pandas dataframe) dataframe which contains demographic groups that will
                 make purchases even if they don't receive an offer
 
     """
 
     persons_completed_offer = list(offer_type_df['person'][offer_type_df['event'] == 'offer completed'].unique())
 
-    df_match = amount_df[amount_df['age'] == 144]
+    match_df = amount_df[amount_df['age'] == 144]
 
     for person in persons_completed_offer:
-        df_match = pd.concat([df_match, amount_df[amount_df['person'].isin([person])]])
+        match_df = pd.concat([match_df, amount_df[amount_df['person'].isin([person])]])
 
-    return df_match
+    return match_df
 
 
 def generate_features(portfolio, transcript, amount_df):
@@ -146,3 +144,23 @@ def generate_features(portfolio, transcript, amount_df):
     return df_offer_type_amount
 
 
+def create_dummy_df(num_df, cat_df, dummy_na):
+    """
+    INPUT:
+    num_df - pandas dataframe with numerical variables
+    cat_df - pandas dataframe with categorical variables
+    dummy_na - Bool holding whether you want to dummy NA vals of categorical columns or not
+
+
+    OUTPUT:
+    num_df - a new dataframe that has the following characteristics:
+            1. dummy columns for each of the categorical columns in cat_df
+            2. if dummy_na is True - it also contains dummy columns for the NaN values
+            3. Use a prefix of the column name with an underscore (_) for separating
+    """
+
+    cat_df = pd.get_dummies(cat_df, dummy_na=dummy_na)
+
+    num_df = pd.concat([num_df, cat_df], axis=1)
+
+    return num_df
