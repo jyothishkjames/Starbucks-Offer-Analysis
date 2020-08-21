@@ -75,8 +75,10 @@ def clean_data(profile, portfolio, transcript, offer, amount):
     return offer_type_df, amount_df
 
 
-def match(offer_type_df, amount_df):
+def purchase_without_offer(offer_type_df, amount_df):
     """
+    Function to find the demographic groups that will make purchases even if they don't receive an offer
+
     INPUT:
     offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
     amount_df - (pandas dataframe) amount_df returned by function clean_data
@@ -146,6 +148,8 @@ def generate_features(portfolio, transcript, amount_df):
 
 def create_dummy_df(num_df, cat_df, dummy_na):
     """
+    Function to create dummy variables for categorical data
+
     INPUT:
     num_df - pandas dataframe with numerical variables
     cat_df - pandas dataframe with categorical variables
