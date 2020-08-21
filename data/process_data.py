@@ -1,3 +1,5 @@
+import argparse
+
 import pandas as pd
 import numpy as np
 import math
@@ -5,8 +7,10 @@ import json
 
 from sqlalchemy import create_engine
 
+from utils import *
 
-def read_data():
+
+def load_data():
     """
     Function to read the data
 
@@ -185,12 +189,42 @@ def save_data(df, database_filepath):
     y - labels
     """
 
-    engine = create_engine('sqlite:///' + database_filepath + 'Home_Credit_Default_Predict.db')
+    engine = create_engine('sqlite:///' + database_filepath + 'starbucks_database.db')
     df.to_sql('Data_Table', engine, index=False)
 
 
 def main():
-    pass
+    # Read the command line arguments and store them
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--file-path-database', action='store', dest='file_path_database', help='filepath of the '
+                                                                                                'database',
+                        default=False, required=True)
+
+    results = parser.parse_args()
+
+    print('Loading data...')
+    portfolio, profile, transcript = load_data()
+
+    print('Cleaning data...')
+    offer_type_df, amount_df = clean_data(profile, portfolio, transcript, offer, amount)
+
+    print('Creating features...')
+    df_offer_type_amount = generate_features(portfolio, transcript, amount_df)
+
+    print('Creating dummy data for categorical features...')
+
+    # numeric cols- difficulty, duration, reward, age, income, amount, year, month
+    df_offer_type_amount_numeric = df_offer_type_amount[['reward', 'age', 'income', 'amount', 'year']]
+
+    # categoric cols- , offer_type, channel_1, channel_2, channel_3, channel_4, gender
+    df_offer_type_amount_categoric = df_offer_type_amount[['offer_type', 'gender']]
+
+    df = create_dummy_df(df_offer_type_amount_numeric, df_offer_type_amount_categoric, dummy_na=False)
+
+    print('Saving data...\n    DATABASE: {}'.format(results.file_path_database))
+    save_data(df, results.file_path_database)
+
+    print('Cleaned data saved to database!')
 
 
 if __name__ == '__main__':
