@@ -3,6 +3,8 @@ import numpy as np
 import math
 import json
 
+from sqlalchemy import create_engine
+
 
 def read_data():
     """
@@ -168,3 +170,20 @@ def create_dummy_df(num_df, cat_df, dummy_na):
     num_df = pd.concat([num_df, cat_df], axis=1)
 
     return num_df
+
+
+def save_data(df, database_filepath):
+    """
+    Function to save the dataframe to a database
+
+    INPUT:
+    df - dataframe to save
+    database_filepath - path where the database has to saved
+
+    OUTPUT:
+    X - features
+    y - labels
+    """
+
+    engine = create_engine('sqlite:///' + database_filepath + 'Home_Credit_Default_Predict.db')
+    df.to_sql('Data_Table', engine, index=False)
