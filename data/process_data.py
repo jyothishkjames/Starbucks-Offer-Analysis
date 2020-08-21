@@ -187,3 +187,11 @@ def save_data(df, database_filepath):
 
     engine = create_engine('sqlite:///' + database_filepath + 'Home_Credit_Default_Predict.db')
     df.to_sql('Data_Table', engine, index=False)
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()
