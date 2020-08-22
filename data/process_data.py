@@ -1,12 +1,7 @@
 import argparse
-
 import pandas as pd
-import numpy as np
-import math
-import json
 
 from sqlalchemy import create_engine
-
 from utils import *
 
 
@@ -148,6 +143,9 @@ def generate_features(portfolio, transcript, amount_df):
 
     # Drop column became_member_on
     df_offer_type_amount.drop(columns=['became_member_on'], inplace=True)
+
+    # Drop rows for which there were no amount match found
+    df_offer_type_amount = df_offer_type_amount.dropna(subset=['age'])
 
     return df_offer_type_amount
 
