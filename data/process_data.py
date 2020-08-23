@@ -90,12 +90,29 @@ def purchase_without_offer(offer_type_df, amount_df):
 
     """
 
-    persons_completed_offer = list(offer_type_df['person'][offer_type_df['event'] == 'offer completed'].unique())
+    # Filter by offer viewed
+    offer_type_viewed_df = offer_type_df[offer_type_df['event'] == 'offer viewed']
 
+    # Filter by offer completed
+    offer_type_completed_df = offer_type_df[offer_type_df['event'] == 'offer completed']
+
+    # Select obly columns 'person' and 'time' from the dataframe offer_type_completed_df
+    offer_type_completed_df = offer_type_completed_df[['person', 'time']]
+
+    # Merge dataframes offer_type_viewed_df and offer_type_completed_df
+    merged_offer = offer_type_viewed_df.merge(offer_type_completed_df, how='inner', on=['person', 'time'])
+
+    # List of persons
+    person_list = list(merged_offer['person'])
+
+    # List of time
+    time_list = list(merged_offer['time'])
+
+    # Empty dataframe of type amount_df
     match_df = amount_df[amount_df['age'] == 144]
 
-    for person in persons_completed_offer:
-        match_df = pd.concat([match_df, amount_df[amount_df['person'].isin([person])]])
+    for person, time in zip(person_list, time_list):
+        match_df = pd.concat([match_df, amount_df[amount_df['person'].isin([person]) & amount_df['time'].isin([time])]])
 
     return match_df
 
@@ -143,9 +160,6 @@ def generate_features(portfolio, transcript, amount_df):
 
     # Drop column became_member_on
     df_offer_type_amount.drop(columns=['became_member_on'], inplace=True)
-
-    # Drop rows for which there were no amount match found
-    df_offer_type_amount = df_offer_type_amount.dropna(subset=['age'])
 
     return df_offer_type_amount
 
