@@ -76,6 +76,36 @@ def clean_data(profile, portfolio, transcript, offer, amount):
     return offer_type_df, amount_df
 
 
+def offer_viewed_completed(offer_type_df):
+    """
+    Function to generate features for training the model
+
+    INPUT:
+    offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
+
+    OUTPUT:
+    merged_offer - (pandas dataframe) merged_offer contains rows with demographics who
+                    has viewed and completed offers, sorted by column 'time'
+
+    """
+    # Filter by offer viewed
+    offer_type_viewed_df = offer_type_df[offer_type_df['event'] == 'offer viewed']
+
+    # Filter by offer completed
+    offer_type_completed_df = offer_type_df[offer_type_df['event'] == 'offer completed']
+
+    # Select obly columns 'person' and 'offer id' from the dataframe offer_type_completed_df
+    offer_type_completed_df = offer_type_completed_df[['person', 'offer id']]
+
+    # Merge dataframes offer_type_viewed_df and offer_type_completed_df
+    merged_offer = offer_type_viewed_df.merge(offer_type_completed_df, how='inner', on=['person', 'offer id'])
+
+    # Sort datarame by column 'time'
+    merged_offer = merged_offer.sort_values(by=['time'])
+
+    return merged_offer
+
+
 def purchase_without_offer(offer_type_df, amount_df):
     """
     Function to find the demographic groups that will make purchases even if they don't receive an offer
@@ -126,7 +156,7 @@ def generate_features_classification(merged_offer, offer_type_df):
     offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
 
     OUTPUT:
-    df_concatinated_sorted - (pandas dataframe) df_concatinated_sorted which contains the features
+    df_concatenated_sorted - (pandas dataframe) df_concatenated_sorted which contains the features
                              for training the model for classification
 
     """
