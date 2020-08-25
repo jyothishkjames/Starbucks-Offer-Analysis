@@ -1,8 +1,8 @@
 import argparse
 import pandas as pd
 
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.metrics import r2_score, classification_report, accuracy_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
@@ -23,8 +23,8 @@ def load_data(database_filepath):
     # load data from database
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table(table_name='Data_Table', con=engine)
-    X = df.drop('amount', axis=1)
-    y = df['amount']
+    X = df.drop('respond', axis=1)
+    y = df['respond']
     return X, y
 
 
@@ -38,15 +38,15 @@ def build_model():
     # build machine learning pipeline
     pipeline = Pipeline([
         ('scaler', MinMaxScaler()),
-        ('clf', RandomForestRegressor())
+        ('clf', RandomForestClassifier())
     ])
 
     parameters = {
         'scaler__feature_range': [(0, 1)],
         'clf__n_estimators': [10, 50, 100],
         'clf__random_state': [50],
-        'clf__max_depth': [10, 20],
-        'clf__criterion': ['mse', 'mae']
+        'clf__class_weight': ['balanced'],
+        'clf__max_features': ['auto', 'log2', 'sqrt']
     }
 
     model = GridSearchCV(pipeline, param_grid=parameters)
@@ -65,10 +65,11 @@ def evaluate_model(model, X_test, Y_test):
     """
     # predict on test data
     Y_pred = model.predict(X_test)
-
-    test_score = r2_score(Y_test, Y_pred)
-
-    print("The rsquared on the testing data is: ", test_score)
+    # display classification report
+    print(classification_report(Y_pred, Y_test))
+    # display classification accuracy
+    accuracy_test = accuracy_score(Y_test, Y_pred)
+    print("The model accuracy on test data is: ", accuracy_test)
 
 
 def main():
