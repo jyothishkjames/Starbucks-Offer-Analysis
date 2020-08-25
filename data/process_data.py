@@ -271,18 +271,21 @@ def main():
     print('Cleaning data...')
     offer_type_df, amount_df = clean_data(profile, portfolio, transcript, offer, amount)
 
-    print('Creating features...')
-    df_offer_type_amount = generate_features(portfolio, transcript, amount_df)
+    print('Finding demographics which has viewed and completed offers...')
+    merged_offer = offer_viewed_completed(offer_type_df)
+
+    print('Creating features for classification...')
+    df_concatenate_sorted = generate_features_classification(merged_offer, offer_type_df)
 
     print('Creating dummy data for categorical features...')
 
-    # numeric cols- difficulty, duration, reward, age, income, amount, year, month
-    df_offer_type_amount_numeric = df_offer_type_amount[['reward', 'age', 'income', 'amount', 'year']]
+    # numeric cols- reward, age, income, respond
+    df_numeric = df_concatenate_sorted[['reward', 'age', 'income', 'respond', 'year', 'month']]
 
-    # categoric cols- , offer_type, channel_1, channel_2, channel_3, channel_4, gender
-    df_offer_type_amount_categoric = df_offer_type_amount[['offer_type', 'gender']]
+    # categoric cols - offer_type, gender
+    df_categoric = df_concatenate_sorted[['offer_type', 'gender']]
 
-    df = create_dummy_df(df_offer_type_amount_numeric, df_offer_type_amount_categoric, dummy_na=False)
+    df = create_dummy_df(df_numeric, df_categoric, dummy_na=False)
 
     print('Saving data...\n    DATABASE: {}'.format(results.file_path_database))
     save_data(df, results.file_path_database)
