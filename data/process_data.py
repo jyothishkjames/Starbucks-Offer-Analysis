@@ -117,51 +117,72 @@ def purchase_without_offer(offer_type_df, amount_df):
     return match_df
 
 
-def generate_features(portfolio, transcript, amount_df):
+def generate_features_classification(merged_offer, offer_type_df):
     """
     Function to generate features for training the model
 
     INPUT:
-    portfolio - (pandas dataframe) portfolio as defined at the top of the notebook
-    transcript - (pandas dataframe) transcript as defined at the top of the notebook
-    amount_df - (pandas dataframe) amount_df returned by function clean_data
+    merged_offer - (pandas dataframe) merged_offer returned by function offer_viewed_completed
+    offer_type_df - (pandas dataframe) offer_type_df returned by function clean_data
 
     OUTPUT:
-    df_offer_type_amount - (pandas dataframe) dataframe which contains the features for training the model
+    df_concatinated_sorted - (pandas dataframe) df_concatinated_sorted which contains the features
+                             for training the model for classification
 
     """
 
-    # Find duplicated rows based on duplicted time
-    duplicated_df = transcript[transcript.duplicated(subset=['time'])]
-
-    # Get rows with event as 'offer completed'
-    df_offer_completed = duplicated_df[duplicated_df['event'] == 'offer completed']
-
-    # Drop column amount
-    df_offer_completed.drop(columns=['amount', 'event'], inplace=True)
-
-    # Merge dataframes amount_df and df_offer_completed, map columns 'amount' to 'offer id'
-    df_offer_amount = amount_df.merge(df_offer_completed, how='right', on=['person', 'time'])
-
-    # Rename column 'id' to 'offer id'
-    portfolio = portfolio.rename(columns={'id': 'offer id'})
-
-    # Merge dataframes portfolio and df_offer_amount, map columns 'offer id' to 'offer type'
-    df_offer_type_amount = portfolio.merge(df_offer_amount, how='right', on='offer id')
-
-    # Drop unnecessary columns
-    df_offer_type_amount.drop(columns=['offer id', 'channels', 'person', 'event', 'time', 'value'], inplace=True)
-
     # Generate year and month from column became_member_on
-    df_became_member_on = pd.to_datetime(df_offer_type_amount['became_member_on'], format='%Y%m%d',
-                                         errors='ignore').to_frame()
-    df_offer_type_amount['year'] = pd.DatetimeIndex(df_became_member_on['became_member_on']).year
-    df_offer_type_amount['month'] = pd.DatetimeIndex(df_became_member_on['became_member_on']).month
+    df_merged_became_member_on = pd.to_datetime(merged_offer['became_member_on'], format='%Y%m%d',
+                                                errors='ignore').to_frame()
+    df_offer_type_became_member_on = pd.to_datetime(offer_type_df['became_member_on'], format='%Y%m%d',
+                                                    errors='ignore').to_frame()
 
-    # Drop column became_member_on
-    df_offer_type_amount.drop(columns=['became_member_on'], inplace=True)
+    merged_offer['year'] = pd.DatetimeIndex(df_merged_became_member_on['became_member_on']).year
+    merged_offer['month'] = pd.DatetimeIndex(df_merged_became_member_on['became_member_on']).month
 
-    return df_offer_type_amount
+    offer_type_df['year'] = pd.DatetimeIndex(df_offer_type_became_member_on['became_member_on']).year
+    offer_type_df['month'] = pd.DatetimeIndex(df_offer_type_became_member_on['became_member_on']).month
+
+    # Drop column 'event'
+    merged_offer.drop(columns=['event'], inplace=True)
+
+    # Find difference of dataframes
+    diff_df2 = offer_type_df[~offer_type_df.apply(tuple, 1).isin(merged_offer.apply(tuple, 1))]
+
+    # Filter by 'offer completed'
+    df_event_offer_completed = diff_df2[diff_df2['event'] == 'offer completed']
+
+    # Drop column 'event', 'time'
+    df_event_offer_completed.drop(columns=['event', 'time'], inplace=True)
+
+    # Drop column 'time'
+    merged_offer.drop(columns=['time'], inplace=True)
+
+    # Find difference of dataframes
+    diff_df3 = df_event_offer_completed[~df_event_offer_completed.apply(tuple, 1).isin(merged_offer.apply(tuple, 1))]
+
+    # Filter by 'offer completed'
+    diff_df2 = diff_df2[diff_df2['event'] != 'offer completed']
+
+    # Dataframes to be concatenated
+    merged_offer['respond'] = 'yes'
+    diff_df2['respond'] = 'no'
+    diff_df3['respond'] = 'no'
+
+    # Drop column 'event', 'time'
+    diff_df2.drop(columns=['event', 'time'], inplace=True)
+
+    # Concatenate dataframes
+    df_concatenate = pd.concat([merged_offer, diff_df2, diff_df3], ignore_index=True)
+
+    # Remove duplicate rows
+    df_concatenate_sorted = df_concatenate.drop_duplicates(
+        subset=['reward', 'age', 'became_member_on', 'income', 'offer_type', 'gender', 'person', 'offer id'])
+
+    # Sort dataframes by 'income'
+    df_concatenate_sorted = df_concatenate_sorted.sort_values(by=['income'], ascending=False)
+
+    return df_concatenate_sorted
 
 
 def create_dummy_df(num_df, cat_df, dummy_na):
