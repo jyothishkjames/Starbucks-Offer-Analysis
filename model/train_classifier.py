@@ -5,7 +5,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.svm import SVC
 from sqlalchemy import create_engine
 
 
@@ -28,7 +29,7 @@ def load_data(database_filepath):
     return X, y
 
 
-def build_model():
+def build_model_random_forest():
     """
     Function to build the machine learning pipeline
 
@@ -49,9 +50,33 @@ def build_model():
         'clf__max_features': ['auto', 'log2', 'sqrt']
     }
 
-    model = GridSearchCV(pipeline, param_grid=parameters)
+    model_random_forest = GridSearchCV(pipeline, param_grid=parameters)
 
-    return model
+    return model_random_forest
+
+
+def build_model_SVC():
+    """
+    Function to build the machine learning pipeline
+
+    OUTPUT:
+    model - model that is build
+    """
+    # build machine learning pipeline
+    pipeline = Pipeline([
+        ('scaler', StandardScaler()),
+        ('clf', SVC())
+    ])
+
+    parameters = {
+        'scaler__with_mean': [True, False],
+        'clf__kernel': ['linear', 'rbf'],
+        'clf__C': [1, 10]
+    }
+
+    model_SVC = GridSearchCV(pipeline, param_grid=parameters)
+
+    return model_SVC
 
 
 def evaluate_model(model, X_test, Y_test):
@@ -86,14 +111,23 @@ def main():
     X, Y = load_data(results.file_path_database)
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
 
-    print('Building model that predicts whether or not someone will respond to an offer...')
-    model = build_model()
+    print('Building Random Forest Classifier model...')
+    model_random_forest = build_model_random_forest()
 
     print('Training model...')
-    model.fit(X_train, Y_train)
+    model_random_forest.fit(X_train, Y_train)
 
     print('Evaluating model...')
-    evaluate_model(model, X_test, Y_test)
+    evaluate_model(model_random_forest, X_test, Y_test)
+
+    print('Building SVC Classifier model...')
+    model_SVC = build_model_SVC()
+
+    print('Training model...')
+    model_SVC.fit(X_train, Y_train)
+
+    print('Evaluating model...')
+    evaluate_model(model_SVC, X_test, Y_test)
 
 
 if __name__ == '__main__':
