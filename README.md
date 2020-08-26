@@ -8,7 +8,7 @@ Here, we analyse the simulated data that mimics customer behavior on the
 Starbucks rewards mobile app. The dataset is a simplified version 
 of the real Starbucks app.
 
-There are three kinds of data **demographic**, **transaction** and **offer data**. 
+There are three kinds of data **demographic**, **transaction** and **offer** data. 
 
 **Demographic** data shows the demographic details of different users.
 
