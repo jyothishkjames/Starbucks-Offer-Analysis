@@ -1,8 +1,8 @@
 import argparse
 import pandas as pd
 
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.metrics import r2_score, classification_report, accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
@@ -86,7 +86,7 @@ def main():
     X, Y = load_data(results.file_path_database)
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
 
-    print('Building model...')
+    print('Building model that predicts whether or not someone will respond to an offer...')
     model = build_model()
 
     print('Training model...')
