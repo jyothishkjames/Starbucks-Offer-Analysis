@@ -66,10 +66,6 @@ The following libraries are used for the project:
     For linear regression we can use the **r2 score** to evaluate the model, 
     whereas for the classifier we can used the **f1-score**.
 
-* ### Exploratory Data Analysis   
-
-
-
 * ### Data Understanding
 
     Now we have the question, we need to move the question into the data. Find the columns from the datasets that would answer these questions.
