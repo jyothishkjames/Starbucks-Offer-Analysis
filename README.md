@@ -109,8 +109,8 @@ The following libraries are used for the project:
     [Evaluation](https://github.com/jyothishkjames/Starbucks-Offer-Analysis/tree/master/model)
     
     For the evaluation, we use the f1 score score to get an understanding of how well our model works. 
-    The Random Forest Classifier model has an f1 score 0.68 and 0.75 for prediction 'yes' and 'no' respectively.
-    The Support Vector Classifier model has an f1 score 0.71 and 0.77 for prediction 'yes' and 'no' respectively.
+    The Random Forest Classifier model has an f1 score 0.70 and 0.77 for prediction 'yes' and 'no' respectively.
+    The Support Vector Classifier model has an f1 score 0.72 and 0.80 for prediction 'yes' and 'no' respectively.
     The closer the score is to 1, the better your model fits the data. Hence we conclude that the Support Vector 
     Classifier model performs better than the Random Forest Classifier model.
 
