@@ -279,8 +279,9 @@ def main():
 
     print('Creating dummy data for categorical features...')
 
-    # numeric cols- reward, age, income, respond
-    df_numeric = df_concatenate_sorted[['reward', 'age', 'income', 'respond', 'year', 'month']]
+    # numeric cols- difficulty, duration, reward, age, income, respond
+    df_numeric = df_concatenate_sorted[
+        ['difficulty', 'duration', 'reward', 'age', 'income', 'respond', 'year', 'month']]
 
     # categoric cols - offer_type, gender
     df_categoric = df_concatenate_sorted[['offer_type', 'gender']]
