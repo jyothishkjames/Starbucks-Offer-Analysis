@@ -108,7 +108,7 @@ The following libraries are used for the project:
 
     [Evaluation](https://github.com/jyothishkjames/Starbucks-Offer-Analysis/tree/master/model)
     
-    For the evaluation, we use the f1 score score to get an understanding of how well our model works. 
+    For the evaluation(predict whether or not someone will respond to an offer), we use the f1 score score to get an understanding of how well our model works. 
     The Random Forest Classifier model has an f1 score 0.70 and 0.77 for prediction 'yes' and 'no' respectively.
     The Support Vector Classifier model has an f1 score 0.72 and 0.80 for prediction 'yes' and 'no' respectively.
     The closer the score is to 1, the better your model fits the data. Hence we conclude that the Support Vector 
@@ -133,6 +133,10 @@ The following libraries are used for the project:
  * Men makes the most purchases without an offer
  * People who became member in the year 2017 makes the most purchases without an offer
  * People who has an income around 73000.0 makes the most purchases without an offer
+ * People of age 58 spends the most amount
+ * Women spends the most amount
+ * People who become members in the year 2017 spends the most amount
+ * People who has an income around 73000.0 spends the most amount 
  
  ## Link to the Blog
   
