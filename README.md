@@ -140,6 +140,6 @@ The following libraries are used for the project:
  
  ## Link to the Blog
   
- [Link to the Blog]()          
+ [Link to the Blog](https://medium.com/@jyothishlp/starbucks-offer-analysis-with-crisp-dm-b94841401872)          
   
  
